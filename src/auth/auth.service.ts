@@ -22,6 +22,7 @@ export class AuthService {
           secret: 'kmzway87aa',
           expiresIn: '60s',
         }),
+        token_type: 'Bearer',
       };
     }
 
