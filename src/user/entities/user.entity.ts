@@ -4,6 +4,7 @@ export class User {
   email: string;
   password?: string;
   emailVerifiedAt: Date;
+  roles: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -37,6 +37,7 @@ export class UserService {
         name: true,
         email: true,
         emailVerifiedAt: true,
+        roles: true,
         createdAt: true,
         updatedAt: true,
       },
