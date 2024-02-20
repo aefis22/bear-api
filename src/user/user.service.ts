@@ -7,21 +7,21 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { User } from './entities/user.entity';
+import { hash } from 'bcryptjs';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const isEmailExist = await this.prisma.users.findUnique({
-      where: { email: createUserDto.email },
-    });
-
-    if (isEmailExist) {
+    if (await this.findByEmail(createUserDto.email)) {
       throw new ConflictException('Email is exist');
     }
     const user = await this.prisma.users.create({
-      data: createUserDto,
+      data: {
+        ...createUserDto,
+        password: await hash(createUserDto.password, 10),
+      },
     });
     return user;
   }
@@ -50,9 +50,18 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`The data with id ${id} is not found`);
     }
+
+    if (updateUserDto.email != user.email) {
+      if (await this.findByEmail(updateUserDto.email)) {
+        throw new ConflictException('Email is exist');
+      }
+    }
     const updatedData = await this.prisma.users.update({
       where: { id },
-      data: updateUserDto,
+      data: {
+        ...updateUserDto,
+        password: await hash(updateUserDto.password, 10),
+      },
     });
     return updatedData;
   }
@@ -68,5 +77,13 @@ export class UserService {
       where: { id },
     });
     return deletedData;
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.prisma.users.findUnique({
+      where: { email: email },
+    });
+
+    return user;
   }
 }
