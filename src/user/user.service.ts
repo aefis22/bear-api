@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { User } from './entities/user.entity';
 import { hash } from 'bcryptjs';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
     const user = await this.prisma.users.create({
       data: {
         ...createUserDto,
+        id: uuid(),
         password: await hash(createUserDto.password, 10),
       },
     });
@@ -28,12 +30,12 @@ export class UserService {
 
   async findAll() {
     const users = await this.prisma.users.findMany({
-      orderBy: { id: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     return users;
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.prisma.users.findUnique({
       where: { id },
     });
@@ -43,7 +45,7 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.prisma.users.findUnique({
       where: { id },
     });
@@ -66,7 +68,7 @@ export class UserService {
     return updatedData;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const user = await this.prisma.users.findUnique({
       where: { id },
     });
