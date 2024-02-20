@@ -25,27 +25,37 @@ export class UserService {
         password: await hash(createUserDto.password, 10),
       },
     });
-    return user;
+    const { password, ...result } = user;
+    return result;
   }
 
   async findAll() {
     const users = await this.prisma.users.findMany({
       orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        emailVerifiedAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
     return users;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<User> {
     const user = await this.prisma.users.findUnique({
       where: { id },
     });
     if (!user) {
       throw new NotFoundException(`The data with id ${id} is not found`);
     }
-    return user;
+    const { password, ...result } = user;
+    return result;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.prisma.users.findUnique({
       where: { id },
     });
@@ -65,10 +75,11 @@ export class UserService {
         password: await hash(updateUserDto.password, 10),
       },
     });
-    return updatedData;
+    const { password, ...result } = updatedData;
+    return result;
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<User> {
     const user = await this.prisma.users.findUnique({
       where: { id },
     });
@@ -78,7 +89,8 @@ export class UserService {
     const deletedData = await this.prisma.users.delete({
       where: { id },
     });
-    return deletedData;
+    const { password, ...result } = deletedData;
+    return result;
   }
 
   async findByEmail(email: string): Promise<User> {

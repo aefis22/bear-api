@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './response.interceptor';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ResponseInterceptor } from './response.interceptor';
       isGlobal: true,
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
