@@ -8,7 +8,6 @@ import { AuthDto } from './dto/auth.dto';
 import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { User } from 'src/user/entities/user.entity';
 import { PrismaService } from 'src/services/prisma.service';
 import { hash } from 'bcryptjs';
 import { v4 as uuid } from 'uuid';
@@ -24,7 +23,7 @@ export class AuthService {
   async login(authDto: AuthDto) {
     const user = await this.userService.findByEmail(authDto.email);
     if (user && (await compare(authDto.password, user.password))) {
-      const payload = { sub: user.id, username: user.email, roles: user.roles };
+      const payload = { sub: user.id, username: user.email };
       const { password, ...result } = user;
       return {
         ...result,
@@ -43,14 +42,14 @@ export class AuthService {
     if (await this.userService.findByEmail(createUserDto.email)) {
       throw new ConflictException('Email is exist');
     }
-    const user = await this.prisma.users.create({
+    const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
         id: uuid(),
         password: await hash(createUserDto.password, 10),
       },
     });
-    const payload = { sub: user.id, username: user.email, roles: user.roles };
+    const payload = { sub: user.id, username: user.email };
     const { password, ...result } = user;
     return {
       ...result,

@@ -6,7 +6,6 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/services/prisma.service';
-import { User } from './entities/user.entity';
 import { hash } from 'bcryptjs';
 import { v4 as uuid } from 'uuid';
 
@@ -14,11 +13,11 @@ import { v4 as uuid } from 'uuid';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     if (await this.findByEmail(createUserDto.email)) {
       throw new ConflictException('Email is exist');
     }
-    const user = await this.prisma.users.create({
+    const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
         id: uuid(),
@@ -30,14 +29,13 @@ export class UserService {
   }
 
   async findAll() {
-    const users = await this.prisma.users.findMany({
+    const users = await this.prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         name: true,
         email: true,
         emailVerifiedAt: true,
-        roles: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -45,8 +43,8 @@ export class UserService {
     return users;
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.prisma.users.findUnique({
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
     if (!user) {
@@ -56,8 +54,8 @@ export class UserService {
     return result;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.prisma.users.findUnique({
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
     if (!user) {
@@ -69,7 +67,7 @@ export class UserService {
         throw new ConflictException('Email is exist');
       }
     }
-    const updatedData = await this.prisma.users.update({
+    const updatedData = await this.prisma.user.update({
       where: { id },
       data: {
         ...updateUserDto,
@@ -80,22 +78,22 @@ export class UserService {
     return result;
   }
 
-  async remove(id: string): Promise<User> {
-    const user = await this.prisma.users.findUnique({
+  async remove(id: string) {
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
     if (!user) {
       throw new NotFoundException(`The data with id ${id} is not found`);
     }
-    const deletedData = await this.prisma.users.delete({
+    const deletedData = await this.prisma.user.delete({
       where: { id },
     });
     const { password, ...result } = deletedData;
     return result;
   }
 
-  async findByEmail(email: string): Promise<User> {
-    const user = await this.prisma.users.findUnique({
+  async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
       where: { email: email },
     });
 

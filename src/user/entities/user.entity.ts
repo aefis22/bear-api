@@ -4,7 +4,7 @@ export class User {
   email: string;
   password?: string;
   emailVerifiedAt: Date;
-  roles: string;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
