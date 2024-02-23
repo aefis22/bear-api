@@ -8,7 +8,7 @@ import { AuthDto } from './dto/auth.dto';
 import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'src/prisma.service';
 import { hash } from 'bcryptjs';
 import { v4 as uuid } from 'uuid';
 

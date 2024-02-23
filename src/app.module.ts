@@ -1,14 +1,22 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { ResponseInterceptor } from './response.interceptor';
 import { AuthModule } from './auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
-import { RolesGuard } from './guards/roles.guard';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from './auth/auth.guard';
+import { AuthMiddleware } from './auth/auth.middleware';
+import { PermissionGuard } from './auth/permission/permission.guard';
+import { UserService } from './user/user.service';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
@@ -32,9 +40,19 @@ import { AuthGuard } from './guards/auth.guard';
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: PermissionGuard,
     },
     JwtService,
+    UserService,
+    PrismaService,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: 'login', version: '1', method: RequestMethod.ALL })
+      .exclude({ path: 'register', version: '1', method: RequestMethod.ALL })
+      .forRoutes({ path: '*', method: RequestMethod.ALL, version: '1' });
+  }
+}

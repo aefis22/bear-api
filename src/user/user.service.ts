@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/services/prisma.service';
+import { PrismaService } from 'src/prisma.service';
 import { hash } from 'bcryptjs';
 
 @Injectable()
@@ -96,5 +96,31 @@ export class UserService {
     });
 
     return user;
+  }
+
+  async getUserPermissions(userId: string) {
+    // Fetch user roles
+    const userRoles = await this.prisma.user_role.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        roles: {
+          include: {
+            role_permission: {
+              include: {
+                permissions: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return userRoles.flatMap((entry) =>
+      entry.roles.role_permission.map(
+        (permission) => permission.permissions.name,
+      ),
+    );
   }
 }
