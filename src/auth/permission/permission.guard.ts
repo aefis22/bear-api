@@ -22,7 +22,7 @@ export class PermissionGuard implements CanActivate {
     const allPermissions = await this.userService.getUserPermissions(user.sub);
 
     if (!requiredPermissions) {
-      return true; // No permissions required, so access granted
+      return false; // No permissions required, so access granted
     }
     return requiredPermissions.some((permission) =>
       allPermissions.includes(permission),

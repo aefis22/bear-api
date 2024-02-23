@@ -34,7 +34,9 @@ export class UserController {
   permissin(@Param('id') id: string) {
     return this.userService.getUserPermissions(id);
   }
+
   @Get(':id')
+  @Permission('user read')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
