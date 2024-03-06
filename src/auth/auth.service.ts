@@ -11,6 +11,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { hash } from 'bcryptjs';
 import { v4 as uuid } from 'uuid';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private prisma: PrismaService,
+    private configService: ConfigService,
   ) {}
 
   async login(authDto: AuthDto) {
@@ -28,10 +30,10 @@ export class AuthService {
       return {
         ...result,
         access_token: await this.jwtService.signAsync(payload, {
-          secret: 'kmzway87aa',
-          expiresIn: '7D',
+          secret: this.configService.get<string>('JWT_SECRET'),
+          expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
         }),
-        token_type: 'Bearer',
+        token_type: this.configService.get<string>('TOKEN_TYPE'),
       };
     }
 
@@ -54,10 +56,10 @@ export class AuthService {
     return {
       ...result,
       access_token: await this.jwtService.signAsync(payload, {
-        secret: 'kmzway87aa',
-        expiresIn: '7D',
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
       }),
-      token_type: 'Bearer',
+      token_type: this.configService.get<string>('TOKEN_TYPE'),
     };
   }
 }
