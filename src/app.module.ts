@@ -18,6 +18,7 @@ import { PermissionGuard } from './auth/permission/permission.guard';
 import { UserService } from './user/user.service';
 import { PrismaService } from './prisma.service';
 import { RoleModule } from './role/role.module';
+import { PermissionModule } from './permission/permission.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RoleModule } from './role/role.module';
     UserModule,
     AuthModule,
     RoleModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [
