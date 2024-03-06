@@ -57,6 +57,12 @@ async function main() {
       roleId: admin.id,
     },
   });
+  await prisma.user_role.create({
+    data: {
+      userId: userSuperadmin.id,
+      roleId: admin.id,
+    },
+  });
 
   const userOperator = await prisma.user.create({
     data: {
@@ -121,6 +127,16 @@ async function main() {
     await prisma.role_permission.create({
       data: {
         roleId: superadmin.id,
+        permissionId: permission.id,
+      },
+    });
+  });
+
+  await prisma.permission.findMany();
+  permissions.map(async (permission) => {
+    await prisma.role_permission.create({
+      data: {
+        roleId: admin.id,
         permissionId: permission.id,
       },
     });

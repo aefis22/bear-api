@@ -48,9 +48,9 @@ model permission {
 
 model role_permission {
   id           String     @id @default(uuid()) @db.VarChar(255)
-  roles        role       @relation(fields: [roleId], references: [id])
+  roles        role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId       String     @map("role_id") @db.VarChar(255)
-  permissions  permission @relation(fields: [permissionId], references: [id])
+  permissions  permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   permissionId String     @map("permission_id") @db.VarChar(255)
   createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
@@ -60,9 +60,9 @@ model role_permission {
 
 model user_role {
   id        String   @id @default(uuid()) @db.VarChar(255)
-  users     user     @relation(fields: [userId], references: [id])
+  users     user     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @map("user_id") @db.VarChar(255)
-  roles     role     @relation(fields: [roleId], references: [id])
+  roles     role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId    String   @map("role_id") @db.VarChar(255)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)

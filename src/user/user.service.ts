@@ -36,19 +36,94 @@ export class UserService {
         emailVerifiedAt: true,
         createdAt: true,
         updatedAt: true,
+        user_role: {
+          select: {
+            roles: {
+              select: {
+                id: true,
+                name: true,
+                role_permission: {
+                  select: {
+                    permissions: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
-    return users;
+
+    const formattedUsers = users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      emailVerifiedAt: user.emailVerifiedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      roles: user.user_role.map((userRole) => ({
+        name: userRole.roles.name,
+        permissions: userRole.roles.role_permission.map(
+          (rolePermission) => rolePermission.permissions.name,
+        ),
+      })),
+    }));
+
+    return formattedUsers;
   }
 
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        emailVerifiedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        user_role: {
+          select: {
+            roles: {
+              select: {
+                id: true,
+                name: true,
+                role_permission: {
+                  select: {
+                    permissions: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     if (!user) {
       throw new NotFoundException(`The data with id ${id} is not found`);
     }
-    const { password, ...result } = user;
+    const result = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      emailVerifiedAt: user.emailVerifiedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      roles: user.user_role.map((userRole) => ({
+        name: userRole.roles.name,
+        permissions: userRole.roles.role_permission.map(
+          (rolePermission) => rolePermission.permissions.name,
+        ),
+      })),
+    };
     return result;
   }
 

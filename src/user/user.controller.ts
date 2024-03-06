@@ -20,6 +20,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @Permission('user create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
@@ -31,6 +32,7 @@ export class UserController {
   }
 
   @Get('permission/:id')
+  @Permission('user read')
   permissin(@Param('id') id: string) {
     return this.userService.getUserPermissions(id);
   }

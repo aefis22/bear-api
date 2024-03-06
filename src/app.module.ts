@@ -17,6 +17,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
 import { PermissionGuard } from './auth/permission/permission.guard';
 import { UserService } from './user/user.service';
 import { PrismaService } from './prisma.service';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PrismaService } from './prisma.service';
     }),
     UserModule,
     AuthModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [
